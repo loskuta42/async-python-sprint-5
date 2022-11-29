@@ -26,3 +26,6 @@ class FilesList(BaseModel):
 
 class ObjPath(BaseModel):
     path: str
+
+    class Config:
+        orm_mode = True

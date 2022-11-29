@@ -23,8 +23,8 @@ logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('tools-files')
 
 
-def is_downloadable(file_info: File):
-    if not file_info.is_downloadable:
+def is_downloadable(file_info: dict):
+    if not file_info.get('is_downloadable'):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='You can not download this file.'
@@ -94,7 +94,7 @@ async def get_path_by_id(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='Directory or file not found'
             )
-        return dir_info.get('path')
+        return dir_info.get()
     return file_info.get('path')
 
 

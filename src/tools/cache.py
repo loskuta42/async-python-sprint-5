@@ -48,9 +48,10 @@ async def get_cache_or_data(
     if not data:
         data = await db_func_obj(*db_func_args, **db_func_kwargs)
         if data:
+            data = data_schema.from_orm(data).dict()
             await set_cache(
                 cache=cache,
-                data=data_schema.from_orm(data).dict(),
+                data=data,
                 redis_key=redis_key,
                 expire=cache_expire
             )

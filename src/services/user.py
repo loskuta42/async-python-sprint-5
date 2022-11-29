@@ -54,7 +54,6 @@ class RepositoryUserDB(
         user_id = str(uuid1())
         extra_obj_info['id'] = user_id
         password = obj_in_data.pop('password')
-        print(password)
         extra_obj_info['hashed_password'] = get_password_hash(password)
         obj_in_data.update(extra_obj_info)
         return self._model(**obj_in_data)

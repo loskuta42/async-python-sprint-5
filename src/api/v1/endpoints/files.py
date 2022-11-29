@@ -68,6 +68,11 @@ async def upload_file(
         current_user: user_schema.CurrentUser = Depends(get_current_user),
         file: UploadFile = File(...)
 ) -> Any:
+    if not path.startswith('/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Path must starts with / .'
+        )
     if path.split('/')[-1] == file.filename:
         full_path = path
     else:
@@ -109,8 +114,8 @@ async def download_file_by_path_or_id(
             db_func_args=(db, path)
         )
         is_downloadable(file_info=file_info)
-        full_path = get_full_path(file_info.path)
-        return FileResponse(path=full_path, filename=file_info.name)
+        full_path = get_full_path(file_info.get('path'))
+        return FileResponse(path=full_path, filename=file_info.get('name'))
     if compression_type not in app_settings.compression_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -123,6 +128,11 @@ async def download_file_by_path_or_id(
             db=db,
             obj_id=path,
             cache=cache
+        )
+    if not path.startswith('/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Path must starts with / .'
         )
     refreshed_io, media_type = compress(
         io_obj=io_obj,
