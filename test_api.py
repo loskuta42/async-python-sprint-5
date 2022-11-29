@@ -96,6 +96,7 @@ def test_download_file(start_server, auth_token):
     assert os.path.exists(result_path)
     assert os.path.getsize(result_path) > 5
 
+
 def test_download_compressed_file(start_server, auth_token):
     response = requests.get(
         'http://127.0.0.1:8080/api/v1/files/download',

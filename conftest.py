@@ -1,4 +1,3 @@
-import json
 import multiprocessing
 import os
 import time
@@ -6,7 +5,6 @@ import time
 import pytest
 import uvicorn
 from fastapi.testclient import TestClient
-import requests
 from dotenv import load_dotenv
 
 from src.main import app
