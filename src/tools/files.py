@@ -1,19 +1,23 @@
 import io
-import os.path
-from io import BytesIO
-import zipfile
-import tarfile
-import py7zr
 import logging.config
+import os.path
+import tarfile
+import zipfile
+from io import BytesIO
 
+import py7zr
 from fastapi import HTTPException, status
+from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.logger import LOGGING
 from src.models.models import File
-from src.core.config import app_settings
-from src.services.base import file_crud, directory_crud
+from src.schemas import file as file_schema
+from src.services.base import directory_crud, file_crud
+
 from .base import get_full_path
+from .cache import get_cache_or_data
+
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('tools-files')
@@ -64,24 +68,34 @@ def get_files_paths_by_folder(full_path: str) -> list:
 
 async def get_path_by_id(
         db: AsyncSession,
-        obj_id: str
+        obj_id: str,
+        cache: RedisCacheBackend,
 ) -> str:
-    file_info = await file_crud.get_file_info_by_id(
-        db=db,
-        file_id=obj_id
+    redis_key = f'path_for_obj_id_{obj_id}'
+    file_info = await get_cache_or_data(
+        redis_key=redis_key,
+        cache=cache,
+        db_func_obj=file_crud.get_file_info_by_id,
+        data_schema=file_schema.ObjPath,
+        db_func_args=(db, obj_id),
+        cache_expire=3600
     )
     if not file_info:
-        dir_info = await directory_crud.get_dir_info_by_id(
-            db=db,
-            dir_id=obj_id
+        dir_info = await get_cache_or_data(
+            redis_key=redis_key,
+            cache=cache,
+            db_func_obj=directory_crud.get_dir_info_by_id,
+            data_schema=file_schema.ObjPath,
+            db_func_args=(db, obj_id),
+            cache_expire=3600
         )
         if not dir_info:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='Directory or file not found'
             )
-        return dir_info.path
-    return file_info.path
+        return dir_info.get('path')
+    return file_info.get('path')
 
 
 def zip_files(io_obj: BytesIO, full_path: str) -> tuple[io.BytesIO, str]:

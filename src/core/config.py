@@ -1,9 +1,10 @@
 import os
 from logging import config as logging_config
 
-from pydantic import BaseSettings, PostgresDsn, Field
+from pydantic import BaseSettings, Field, PostgresDsn
 
 from .logger import LOGGING
+
 
 logging_config.dictConfig(LOGGING)
 

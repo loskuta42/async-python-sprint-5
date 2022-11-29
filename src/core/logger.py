@@ -57,6 +57,12 @@ LOGGING = {
         'tools-files': {
             'level': 'INFO',
         },
+        'auth': {
+            'level': 'INFO',
+        },
+        'ping': {
+            'level': 'INFO',
+        },
     },
     'root': {
         'level': 'INFO',

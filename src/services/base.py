@@ -1,12 +1,11 @@
-from src.models.models import (
-    User as UserModel,
-    File as FileModel,
-    Directory as DirectoryModel
-)
+from src.models.models import Directory as DirectoryModel
+from src.models.models import File as FileModel
+from src.models.models import User as UserModel
 from src.schemas.user import UserRegister
-from .user import RepositoryUserDB
-from .file import RepositoryFileDB
+
 from .directory import RepositoryDirectoryDB
+from .file import RepositoryFileDB
+from .user import RepositoryUserDB
 
 
 class RepositoryUser(

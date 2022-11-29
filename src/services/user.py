@@ -1,4 +1,3 @@
-import os
 from typing import Generic, Optional, Type, TypeVar
 from uuid import uuid1
 
@@ -9,7 +8,6 @@ from sqlalchemy.future import select
 
 from src.db.db import Base
 from src.tools.password import get_password_hash
-from src.core.config import app_settings
 
 
 class Repository:

@@ -1,16 +1,17 @@
 import logging.config
 import os
 
+from dotenv import load_dotenv
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
-from dotenv import load_dotenv
 
+from src.core.logger import LOGGING
 from src.db.db import get_session
 from src.schemas import user as user_schema
-from src.core.logger import LOGGING
 from src.services.auth import get_token
+
 
 router = APIRouter()
 
@@ -37,6 +38,7 @@ async def login_ui_for_access_token(
         username=form_data.username,
         password=form_data.password
     )
+    logger.info(f'Send token for {form_data.username}')
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
@@ -57,4 +59,5 @@ async def get_token_for_user(
         username=username,
         password=password
     )
+    logger.info('Send token for %s', username)
     return {'access_token': access_token}

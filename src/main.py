@@ -1,12 +1,19 @@
+import os
+
 import uvicorn
-from fastapi import FastAPI, Depends
+from dotenv import load_dotenv
+from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi_cache import caches, close_caches
+from fastapi_cache.backends.redis import CACHE_KEY, RedisCacheBackend
 
 from src.api.v1 import base
 from src.core.config import app_settings
 from src.db.db import async_session
 from src.services.base import directory_crud
+
+load_dotenv('.env')
+LOCAL_REDIS_URL = 'redis://127.0.0.1:6379'
 
 app = FastAPI(
     title=app_settings.app_title,
@@ -20,7 +27,7 @@ app.include_router(base.api_router, prefix='/api/v1')
 
 
 @app.on_event('startup')
-async def startup_event():
+async def create_file_directory():
     async with async_session() as db:
         root_dir = await directory_crud.get_dir_info_by_path(
             db=db,
@@ -28,10 +35,24 @@ async def startup_event():
         )
         if root_dir:
             return
+        if not os.path.exists(app_settings.files_folder_path):
+            os.mkdir(app_settings.files_folder_path)
         await directory_crud.create_dir_info(
             db=db,
             path=app_settings.files_folder_path
         )
+
+
+@app.on_event('startup')
+async def on_startup() -> None:
+    rc = RedisCacheBackend(os.environ.get('REDIS_URL', LOCAL_REDIS_URL))
+    caches.set(CACHE_KEY, rc)
+
+
+@app.on_event('shutdown')
+async def on_shutdown() -> None:
+    await close_caches()
+
 
 if __name__ == '__main__':
     uvicorn.run(

@@ -2,17 +2,18 @@ import os
 from datetime import datetime, timedelta
 from typing import Union
 
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from src.db.db import get_session
-from src.tools.password import verify_password, get_password_hash
 from src.models.models import User
 from src.schemas import user as user_schema
+from src.tools.password import get_password_hash, verify_password
+
 
 load_dotenv('.env')
 

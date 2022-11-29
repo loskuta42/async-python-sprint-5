@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Union
 
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel
 
 from .file import File
 
@@ -23,7 +23,7 @@ class User(BaseModel):
 
 
 class UserRegisterResponse(User):
-    created_at: datetime
+    created_at: Union[datetime, str]
 
     class Config:
         orm_mode = True
@@ -32,6 +32,9 @@ class UserRegisterResponse(User):
 class UserRegister(User):
     password: str
 
+    class Config:
+        orm_mode = True
+
 
 class UserAuth(UserRegister):
     pass
@@ -39,7 +42,7 @@ class UserAuth(UserRegister):
 
 class CurrentUser(User):
     id: str
-    created_at: datetime
+    created_at: Union[datetime, str]
 
     class Config:
         orm_mode = True

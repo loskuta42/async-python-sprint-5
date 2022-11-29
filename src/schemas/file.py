@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -6,7 +7,7 @@ from pydantic import BaseModel
 class File(BaseModel):
     id: str
     name: str
-    created_at: datetime
+    created_at: Union[datetime, str]
     path: str
     size: int
     is_downloadable: bool
@@ -17,4 +18,11 @@ class File(BaseModel):
 
 class FilesList(BaseModel):
     account_id: str
-    files: list
+    files: List[File]
+
+    class Config:
+        orm_mode = True
+
+
+class ObjPath(BaseModel):
+    path: str

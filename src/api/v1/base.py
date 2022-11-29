@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from .endpoints import register, authorization, files
+
+from .endpoints import authorization, files, ping, register
 
 
 api_router = APIRouter()
@@ -21,4 +22,10 @@ api_router.include_router(
     files.router,
     prefix='/files',
     tags=['files']
+)
+
+api_router.include_router(
+    ping.router,
+    prefix='/ping',
+    tags=['ping']
 )
