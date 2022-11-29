@@ -28,7 +28,7 @@ async def get_ping():
 
     time_db = (finish_db - start_db).total_seconds()
 
-    redis_connection = redis.Redis()
+    redis_connection = redis.Redis(host='redis', port=6379, decode_responses=True)
     start_redis = datetime.utcnow()
     await redis_connection.ping()
     finish_redis = datetime.utcnow()
