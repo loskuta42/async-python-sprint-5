@@ -12,7 +12,7 @@ from sqlalchemy.future import select
 from src.db.db import get_session
 from src.models.models import User
 from src.schemas import user as user_schema
-from src.tools.password import get_password_hash, verify_password
+from src.tools.password import verify_password
 
 
 load_dotenv('.env')

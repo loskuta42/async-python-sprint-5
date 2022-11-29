@@ -11,7 +11,6 @@ from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.logger import LOGGING
-from src.models.models import File
 from src.schemas import file as file_schema
 from src.services.base import directory_crud, file_crud
 

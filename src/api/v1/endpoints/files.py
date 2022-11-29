@@ -2,8 +2,15 @@ import logging.config
 from io import BytesIO
 from typing import Any, Optional
 
-from fastapi import (APIRouter, Depends, File, HTTPException, Query,
-                     UploadFile, status)
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    UploadFile,
+    status
+)
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi_cache.backends.redis import RedisCacheBackend
@@ -17,11 +24,18 @@ from src.schemas import user as user_schema
 from src.services.auth import get_current_user
 from src.services.base import file_crud
 from src.tools.base import get_full_path
-from src.tools.cache import (get_cache, get_cache_or_data, redis_cache,
-                             set_cache)
-from src.tools.files import (compress, get_file_info, get_path_by_id,
-                             is_downloadable)
-
+from src.tools.cache import (
+    get_cache,
+    get_cache_or_data,
+    redis_cache,
+    set_cache
+)
+from src.tools.files import (
+    compress,
+    get_file_info,
+    get_path_by_id,
+    is_downloadable
+)
 
 router = APIRouter()
 
