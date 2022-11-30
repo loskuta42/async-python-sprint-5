@@ -11,13 +11,11 @@ from fastapi import (
     UploadFile,
     status
 )
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import app_settings
-from src.core.logger import LOGGING
 from src.db.db import get_session
 from src.schemas import file as file_schema
 from src.schemas import user as user_schema
@@ -34,12 +32,12 @@ from src.tools.files import (
     compress,
     get_file_info,
     get_path_by_id,
-    is_downloadable
+    is_downloadable,
+    get_compressed_file_with_media_type
 )
 
 router = APIRouter()
 
-logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('files')
 
 
@@ -65,7 +63,7 @@ async def get_list(
         }
         await set_cache(cache, data, redis_key)
     logger.info('Send list of files of %s', current_user.id)
-    return JSONResponse(content=jsonable_encoder(data, exclude={'user_id'}))
+    return data
 
 
 @router.post(
@@ -135,24 +133,13 @@ async def download_file_by_path_or_id(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Specified compression type is not supported.'
         )
-    io_obj = BytesIO()
-    file_name = 'archive' + '.' + compression_type
-    if path.find('/') == -1:
-        path = await get_path_by_id(
-            db=db,
-            obj_id=path,
-            cache=cache
-        )
-    if not path.startswith('/'):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Path must starts with / .'
-        )
-    refreshed_io, media_type = compress(
-        io_obj=io_obj,
+    refreshed_io, media_type = await get_compressed_file_with_media_type(
+        db=db,
+        cache=cache,
         path=path,
         compression_type=compression_type
     )
+    file_name = 'archive' + '.' + compression_type
     logger.info('User %s download file %s', current_user.id, path)
     return StreamingResponse(
         iter([refreshed_io.getvalue()]),

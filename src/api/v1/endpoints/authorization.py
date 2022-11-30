@@ -11,16 +11,12 @@ from src.core.logger import LOGGING
 from src.db.db import get_session
 from src.schemas import user as user_schema
 from src.services.auth import get_token
+from src.core.config import app_settings
 
 
 router = APIRouter()
 
-logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('auth')
-
-load_dotenv('.env')
-
-ACCESS_TOKEN_EXPIRE_MINUTES = float(os.environ['ACCESS_TOKEN_EXPIRE_MINUTES'])
 
 
 @router.post(
@@ -39,7 +35,7 @@ async def login_ui_for_access_token(
         password=form_data.password
     )
     logger.info(f'Send token for {form_data.username}')
-    return {'access_token': access_token, 'token_type': 'bearer'}
+    return access_token
 
 
 @router.post(
@@ -52,12 +48,11 @@ async def get_token_for_user(
         db: AsyncSession = Depends(get_session),
         obj_in: user_schema.UserAuth
 ):
-    obj_in_data = jsonable_encoder(obj_in)
-    username, password = obj_in_data['username'], obj_in_data['password']
+    username, password = obj_in.username, obj_in.password
     access_token = await get_token(
         db=db,
         username=username,
         password=password
     )
     logger.info('Send token for %s', username)
-    return {'access_token': access_token}
+    return access_token

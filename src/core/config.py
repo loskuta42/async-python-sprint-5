@@ -19,6 +19,8 @@ class AppSettings(BaseSettings):
     project_host: str = Field('127.0.0.1', env='PROJECT_HOST')
     project_port: int = Field(8080, env='PROJECT_PORT')
     base_dir: str = Field(BASE_DIR, env='BASE_DIR')
+    token_expire_minutes: int = Field(60, env='ACCESS_TOKEN_EXPIRE_MINUTES')
+
     files_folder_path: str = Field(
         os.path.join(
             BASE_DIR[:((-1) * NUMBER_OF_DELETED_SYMBOLS)],

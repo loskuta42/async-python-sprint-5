@@ -138,7 +138,6 @@ COMPRESSION_TO_FUNC = {
     '7z': seven_zip_files
 }
 
-
 def compress(
         io_obj: BytesIO,
         path: str,
@@ -147,3 +146,29 @@ def compress(
     full_path = get_full_path(path=path)
     io_obj, media_type = COMPRESSION_TO_FUNC[compression_type](io_obj, full_path)
     return io_obj, media_type
+
+
+async def get_compressed_file_with_media_type(
+        db: AsyncSession,
+        cache: RedisCacheBackend,
+        path: str,
+        compression_type: str
+) -> tuple(BytesIO, str):
+    io_obj = BytesIO()
+    if path.find('/') == -1:
+        path = await get_path_by_id(
+            db=db,
+            obj_id=path,
+            cache=cache
+        )
+    if not path.startswith('/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Path must starts with / .'
+        )
+    refreshed_io, media_type = compress(
+        io_obj=io_obj,
+        path=path,
+        compression_type=compression_type
+    )
+    return refreshed_io, media_type

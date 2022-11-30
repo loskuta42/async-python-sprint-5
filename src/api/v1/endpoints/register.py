@@ -33,15 +33,7 @@ async def create_user(
     """
     Create new user.
     """
-    redis_key = f'register_username_{user_in.username}'
-    user_obj = await get_cache_or_data(
-        redis_key=redis_key,
-        cache=cache,
-        db_func_obj=user_crud.get_by_username,
-        data_schema=user_schema.UserRegisterResponse,
-        db_func_args=(db, user_in),
-        cache_expire=3600
-    )
+    user_obj = user_crud.get_by_username(db=db, obj_in=user_in)
     if user_obj:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
