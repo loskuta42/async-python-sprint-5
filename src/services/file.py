@@ -12,6 +12,7 @@ from src.core.config import app_settings
 from src.db.db import Base
 from src.tools.base import get_full_path
 from src.tools.directory import create_dir_info
+from src.tools.file_create import put_file, create_file
 
 
 class Repository:
@@ -85,35 +86,50 @@ class RepositoryFileDB(
         )
         full_file_path = get_full_path(file_path)
         if file_in_storage:
-            with open(full_file_path, 'wb') as buffer:
-                await copyfileobj(file_obj.file, buffer)
-            size = os.path.getsize(full_file_path)
-            file_in_storage.size = size
-            file_in_storage.created_at = datetime.utcnow()
-            await db.commit()
-            await db.refresh(file_in_storage)
-            return file_in_storage
-        else:
-            path = app_settings.files_folder_path
-            for dir_name in file_path.split('/')[1:-1]:
-                path = os.path.join(path, dir_name)
-                if os.path.exists(path):
-                    continue
-                else:
-                    os.mkdir(path)
-                    await create_dir_info(db=db, path=path)
-            with open(full_file_path, 'wb') as buffer:
-                await copyfileobj(file_obj.file, buffer)
-            size = os.path.getsize(full_file_path)
-            new_file = self._model(
-                id=str(uuid1()),
-                name=file_obj.filename,
-                path=file_path,
-                size=size,
-                is_downloadable=True,
-                user=user_obj
+            return await put_file(
+                db=db,
+                full_file_path=full_file_path,
+                file_info=file_in_storage,
+                file_obj=file_obj
             )
-            db.add(new_file)
-            await db.commit()
-            await db.refresh(new_file)
-            return new_file
+            # with open(full_file_path, 'wb') as buffer:
+            #     await copyfileobj(file_obj.file, buffer)
+            # size = os.path.getsize(full_file_path)
+            # file_in_storage.size = size
+            # file_in_storage.created_at = datetime.utcnow()
+            # await db.commit()
+            # await db.refresh(file_in_storage)
+            # return file_in_storage
+        else:
+            return await create_file(
+                db=db,
+                file_path=file_path,
+                full_file_path=full_file_path,
+                create_dir_info=create_dir_info,
+                file_obj=file_obj,
+                model=self._model,
+                user_obj=user_obj
+            )
+            # path = app_settings.files_folder_path
+            # for dir_name in file_path.split('/')[1:-1]:
+            #     path = os.path.join(path, dir_name)
+            #     if os.path.exists(path):
+            #         continue
+            #     else:
+            #         os.mkdir(path)
+            #         await create_dir_info(db=db, path=path)
+            # with open(full_file_path, 'wb') as buffer:
+            #     await copyfileobj(file_obj.file, buffer)
+            # size = os.path.getsize(full_file_path)
+            # new_file = self._model(
+            #     id=str(uuid1()),
+            #     name=file_obj.filename,
+            #     path=file_path,
+            #     size=size,
+            #     is_downloadable=True,
+            #     user=user_obj
+            # )
+            # db.add(new_file)
+            # await db.commit()
+            # await db.refresh(new_file)
+            # return new_file

@@ -1,7 +1,7 @@
 from datetime import datetime
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, UUID
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 
@@ -21,9 +21,9 @@ class File(Base):
     __tablename__ = 'files'
     id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid1)
     user_id = Column(UUIDType(binary=False), ForeignKey('users.id'), nullable=False, index=True)
-    name = Column(String, nullable=False)
+    name = Column(String(125), nullable=False)
     created_at = Column(DateTime, index=True, default=datetime.utcnow)
-    path = Column(String, nullable=False, unique=True)
+    path = Column(String(255), nullable=False, unique=True)
     size = Column(Integer, nullable=False)
     is_downloadable = Column(Boolean, default=False)
 
@@ -31,5 +31,5 @@ class File(Base):
 class Directory(Base):
     __tablename__ = 'directories'
     id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid1)
-    path = Column(String, nullable=False, unique=True)
+    path = Column(String(255), nullable=False, unique=True)
 

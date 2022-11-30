@@ -2,14 +2,12 @@ import logging.config
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.logger import LOGGING
 from src.db.db import get_session
 from src.schemas import user as user_schema
 from src.services.base import user_crud
-from src.tools.cache import get_cache_or_data, redis_cache
 
 
 router = APIRouter()
@@ -27,13 +25,13 @@ logger = logging.getLogger('register')
 async def create_user(
         *,
         db: AsyncSession = Depends(get_session),
-        user_in: user_schema.UserRegister,
-        cache: RedisCacheBackend = Depends(redis_cache)
+        user_in: user_schema.UserRegister
 ) -> Any:
     """
     Create new user.
     """
-    user_obj = user_crud.get_by_username(db=db, obj_in=user_in)
+    user_obj = await user_crud.get_by_username(db=db, obj_in=user_in)
+    print('user_obj-----', user_obj)
     if user_obj:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

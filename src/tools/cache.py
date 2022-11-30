@@ -1,4 +1,5 @@
 import json
+import uuid
 from datetime import datetime
 from typing import Callable, Type
 
@@ -11,8 +12,12 @@ def redis_cache():
     return caches.get(CACHE_KEY)
 
 
-def serialized_dates(value):
-    return value.isoformat() if isinstance(value, datetime) else value
+def serialized_data(value):
+    if isinstance(value, datetime):
+        return value.isoformat()
+    elif isinstance(value, uuid.UUID):
+        return str(value)
+    return value
 
 
 async def set_cache(
@@ -23,7 +28,7 @@ async def set_cache(
 ):
     await cache.set(
         key=redis_key,
-        value=json.dumps(data, default=serialized_dates),
+        value=json.dumps(data, default=serialized_data),
         expire=expire
     )
 

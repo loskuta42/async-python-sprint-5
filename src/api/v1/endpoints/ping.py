@@ -7,6 +7,7 @@ from fastapi import APIRouter, status
 from src.core.logger import LOGGING
 from src.db.db import engine
 from src.schemas import ping as ping_schema
+from src.core.config import app_settings
 
 
 router = APIRouter()
@@ -28,7 +29,11 @@ async def get_ping():
 
     time_db = (finish_db - start_db).total_seconds()
 
-    redis_connection = redis.Redis(host='redis', port=6379, decode_responses=True)
+    redis_connection = redis.Redis(
+        host=app_settings.redis_host,
+        port=app_settings.redis_port,
+        decode_responses=True
+    )
     start_redis = datetime.utcnow()
     await redis_connection.ping()
     finish_redis = datetime.utcnow()

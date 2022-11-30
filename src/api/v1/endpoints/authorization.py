@@ -1,17 +1,12 @@
 import logging.config
-import os
 
-from dotenv import load_dotenv
 from fastapi import APIRouter, Depends
-from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.logger import LOGGING
 from src.db.db import get_session
 from src.schemas import user as user_schema
 from src.services.auth import get_token
-from src.core.config import app_settings
 
 
 router = APIRouter()

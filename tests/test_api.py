@@ -61,7 +61,7 @@ def test_ping(start_server):
 
 
 def test_upload_file(start_server, auth_token):
-    path_of_upload_file = Path('./README.md')
+    path_of_upload_file = Path('../README.md')
     file = {'file': path_of_upload_file.open('rb')}
     response = requests.post(
         'http://127.0.0.1:8080/api/v1/files/upload',
@@ -89,7 +89,7 @@ def test_download_file(start_server, auth_token):
         stream=True
     )
     assert response.status_code == HTTPStatus.OK
-    result_path = './file_test/README.md'
+    result_path = '../file_test/README.md'
     with open(result_path, 'wb') as file:
         response.raw.decode_content = True
         shutil.copyfileobj(response.raw, file)
@@ -110,7 +110,7 @@ def test_download_compressed_file(start_server, auth_token):
         stream=True
     )
     assert response.status_code == HTTPStatus.OK
-    result_path = './file_test/test.zip'
+    result_path = '../file_test/test.zip'
     with open(result_path, 'wb') as file:
         response.raw.decode_content = True
         shutil.copyfileobj(response.raw, file)

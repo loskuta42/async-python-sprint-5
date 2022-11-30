@@ -1,7 +1,6 @@
 import os
 
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi_cache import caches, close_caches
@@ -12,8 +11,6 @@ from src.core.config import app_settings
 from src.db.db import async_session
 from src.services.base import directory_crud
 
-load_dotenv('.env')
-LOCAL_REDIS_URL = 'redis://127.0.0.1:6379'
 
 app = FastAPI(
     title=app_settings.app_title,
@@ -45,7 +42,7 @@ async def create_file_directory():
 
 @app.on_event('startup')
 async def on_startup() -> None:
-    rc = RedisCacheBackend(os.environ.get('REDIS_URL', LOCAL_REDIS_URL))
+    rc = RedisCacheBackend(app_settings.local_redis_url)
     caches.set(CACHE_KEY, rc)
 
 

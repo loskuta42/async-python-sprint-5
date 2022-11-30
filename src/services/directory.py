@@ -47,7 +47,7 @@ class RepositoryDirectoryDB(
     async def get_dir_info_by_id(
             self,
             db: AsyncSession,
-            dir_id: str
+            dir_id: uuid.UUID
     ) -> Optional[ModelType]:
         statement = select(self._model).where(self._model.id == dir_id)
         result = await db.execute(statement=statement)
@@ -58,9 +58,7 @@ class RepositoryDirectoryDB(
             db: AsyncSession,
             path: str
     ) -> ModelType:
-        dir_id = str(uuid.uuid1())
         dir_info_obj = self._model(
-            id=dir_id,
             path=path
         )
         db.add(dir_info_obj)

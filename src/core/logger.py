@@ -49,18 +49,27 @@ LOGGING = {
             'propagate': False,
         },
         'register': {
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'files': {
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'tools-files': {
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'auth': {
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'ping': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'services_auth': {
+            'handlers': ['console'],
             'level': 'INFO',
         },
     },

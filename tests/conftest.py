@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from src.main import app
 
 
-load_dotenv('.env')
+load_dotenv('../.env')
 
 
 @pytest.fixture

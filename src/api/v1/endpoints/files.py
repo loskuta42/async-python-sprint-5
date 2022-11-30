@@ -1,5 +1,4 @@
 import logging.config
-from io import BytesIO
 from typing import Any, Optional
 
 from fastapi import (
@@ -52,7 +51,7 @@ async def get_list(
         current_user: user_schema.CurrentUser = Depends(get_current_user),
         cache: RedisCacheBackend = Depends(redis_cache)
 ) -> Any:
-    redis_key = f'files_list_for_{current_user.id}'
+    redis_key = f'files_list_for_{str(current_user.id)}'
     data = await get_cache(cache, redis_key)
     if not data:
         files = await file_crud.get_list_by_user_object(db=db, user_obj=current_user)
@@ -65,10 +64,9 @@ async def get_list(
     logger.info('Send list of files of %s', current_user.id)
     return data
 
-
 @router.post(
     '/upload',
-    response_model=file_schema.File,
+    response_model=file_schema.FileInDB,
     status_code=status.HTTP_201_CREATED,
     description='Upload file.'
 )
@@ -95,6 +93,7 @@ async def upload_file(
         file_obj=file,
         file_path=full_path
     )
+    print('file_obj------', file_obj)
     logger.info('Upload/put file %s from %s', full_path, current_user.id)
     return file_obj
 
