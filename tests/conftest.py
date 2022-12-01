@@ -1,12 +1,9 @@
 import asyncio
-import multiprocessing
 import shutil
-import time
 from pathlib import Path
 
 import pytest
 import pytest_asyncio
-import uvicorn
 from fastapi_cache import caches
 from fastapi_cache.backends.redis import RedisCacheBackend
 from httpx import AsyncClient
@@ -18,16 +15,7 @@ from src.main import app
 from src.db.db import Base, get_session
 from src.tools.cache import redis_cache
 
-
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-
-
-def server(host, port):
-    uvicorn.run(
-        'conftest:app',
-        host=host,
-        port=port,
-    )
 
 
 def get_test_engine():
@@ -124,12 +112,3 @@ async def auth_async_client_with_file(auth_async_client):
     )
     yield auth_async_client
     shutil.rmtree(app_settings.files_folder_path + '/test')
-
-
-@pytest.fixture(autouse=True, scope='session')
-def start_server():
-    process = multiprocessing.Process(target=server, args=('127.0.0.1', 8080))
-    process.start()
-    time.sleep(4)
-    yield
-    process.terminate()
