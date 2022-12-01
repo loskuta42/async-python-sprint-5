@@ -37,6 +37,8 @@ services:
     volumes:
       - ./services/nginx.conf:/etc/nginx/conf.d/default.conf
     restart: always
+    env_file:
+      - ./.env
 
     depends_on:
       - backend

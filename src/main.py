@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi_cache import caches, close_caches
 from fastapi_cache.backends.redis import CACHE_KEY, RedisCacheBackend
+from fastapi.staticfiles import StaticFiles
 
 from src.api.v1 import base
 from src.core.config import app_settings
@@ -21,28 +22,12 @@ app = FastAPI(
 )
 
 app.include_router(base.api_router, prefix='/api/v1')
-
-
-@app.on_event('startup')
-async def create_file_directory():
-    async with async_session() as db:
-        root_dir = await directory_crud.get_dir_info_by_path(
-            db=db,
-            dir_path=app_settings.files_folder_path
-        )
-        if root_dir:
-            return
-        if not os.path.exists(app_settings.files_folder_path):
-            os.mkdir(app_settings.files_folder_path)
-        await directory_crud.create_dir_info(
-            db=db,
-            path=app_settings.files_folder_path
-        )
+app.mount('/files', StaticFiles(directory='files'), name='files')
 
 
 @app.on_event('startup')
 async def on_startup() -> None:
-    rc = RedisCacheBackend(app_settings.local_redis_url)
+    rc = RedisCacheBackend(app_settings.redis_url)
     caches.set(CACHE_KEY, rc)
 
 

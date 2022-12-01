@@ -14,8 +14,8 @@ from src.schemas import user as user_schema
 from src.tools.password import verify_password
 from src.core.config import app_settings
 
-
 logging.getLogger('services_auth')
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='v1/authorization/token')
 
 
@@ -87,7 +87,7 @@ async def get_token(db: AsyncSession, username: str, password: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=app_settings.token_expire_minutes)
-    token =  create_access_token(
+    token = create_access_token(
         data={'sub': user.username}, expires_delta=access_token_expires
     )
     return {'access_token': token, 'token_type': 'bearer'}

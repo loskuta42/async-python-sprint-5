@@ -42,7 +42,7 @@ class UserAuth(UserRegister):
 
 class CurrentUser(User):
     id: UUID
-    created_at: str
+    created_at: datetime
 
     @validator('created_at', pre=True)
     def datetime_to_str(cls, value):

@@ -10,7 +10,7 @@ from fastapi import (
     UploadFile,
     status
 )
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse, RedirectResponse
 from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,9 +28,7 @@ from src.tools.cache import (
     set_cache
 )
 from src.tools.files import (
-    compress,
     get_file_info,
-    get_path_by_id,
     is_downloadable,
     get_compressed_file_with_media_type
 )
@@ -64,6 +62,7 @@ async def get_list(
     logger.info('Send list of files of %s', current_user.id)
     return data
 
+
 @router.post(
     '/upload',
     response_model=file_schema.FileInDB,
@@ -93,7 +92,6 @@ async def upload_file(
         file_obj=file,
         file_path=full_path
     )
-    print('file_obj------', file_obj)
     logger.info('Upload/put file %s from %s', full_path, current_user.id)
     return file_obj
 
@@ -125,8 +123,8 @@ async def download_file_by_path_or_id(
             db_func_args=(db, path)
         )
         is_downloadable(file_info=file_info)
-        full_path = get_full_path(file_info.get('path'))
-        return FileResponse(path=full_path, filename=file_info.get('name'))
+        file_url = app_settings.static_url + file_info.get('path')
+        return RedirectResponse(file_url)
     if compression_type not in app_settings.compression_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

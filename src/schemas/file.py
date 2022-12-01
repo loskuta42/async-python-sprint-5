@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Union
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel, validator
@@ -10,13 +10,16 @@ class ORM(BaseModel):
         orm_mode = True
 
 
-class FileInDB(ORM):
+class FileBase(ORM):
     id: UUID
     name: str
     created_at: datetime
     path: str
     size: int
     is_downloadable: bool
+
+
+class FileInDB(FileBase):
 
     @validator('created_at')
     def datetime_to_str(cls, value):
@@ -26,13 +29,7 @@ class FileInDB(ORM):
             return value
 
 
-class File(ORM):
-    id: UUID
-    name: str
-    created_at: datetime
-    path: str
-    size: int
-    is_downloadable: bool
+class File(FileBase):
 
     @validator('created_at', pre=True)
     def datetime_to_str(cls, value):

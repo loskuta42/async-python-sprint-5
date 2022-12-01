@@ -26,9 +26,10 @@ class AppSettings(BaseSettings):
     redis_url: str
     redis_host: str
     redis_port: int
+    static_url: str
     files_folder_path: str = Field(
         os.path.join(
-            BASE_DIR[:((-1) * NUMBER_OF_DELETED_SYMBOLS)],
+            BASE_DIR,
             'files'
         ),
         env='FILES_BASE_DIR'
