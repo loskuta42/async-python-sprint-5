@@ -32,4 +32,3 @@ class Directory(Base):
     __tablename__ = 'directories'
     id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid1)
     path = Column(String(255), nullable=False, unique=True)
-

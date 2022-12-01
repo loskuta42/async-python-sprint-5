@@ -133,4 +133,3 @@ def start_server():
     time.sleep(4)
     yield
     process.terminate()
-
