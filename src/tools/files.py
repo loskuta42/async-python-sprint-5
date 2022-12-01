@@ -3,24 +3,20 @@ import logging.config
 import os.path
 import tarfile
 import zipfile
-from datetime import datetime
 from io import BytesIO
-from typing import Callable, Type
+from typing import Callable
 
 import py7zr
-from aioshutil import copyfileobj
-from fastapi import HTTPException, status, File as FileObj
+from fastapi import HTTPException, status
 from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.logger import LOGGING
 from src.schemas import file as file_schema
 from src.services.base import directory_crud, file_crud
-from src.models.models import File as FileModel, User as UserModel
 
 from .base import get_full_path
 from .cache import get_cache_or_data
-from ..core.config import app_settings
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('tools-files')
@@ -119,12 +115,6 @@ def zip_files(io_obj: BytesIO, full_path: str) -> tuple[io.BytesIO, str]:
             write_to_file_func=zip_io.write,
             full_path=full_path
         )
-        # if is_file(full_path):
-        #     zip_io.write(full_path)
-        # else:
-        #     files_paths = get_files_paths_by_folder(full_path)
-        #     for file_path in files_paths:
-        #         zip_io.write(file_path)
         zip_io.close()
     return io_obj, 'application/x-zip-compressed'
 
@@ -135,12 +125,6 @@ def tar_files(io_obj: BytesIO, full_path: str) -> tuple[io.BytesIO, str]:
             write_to_file_func=tar.add,
             full_path=full_path
         )
-        # if is_file(full_path):
-        #     tar.add(full_path)
-        # else:
-        #     files_paths = get_files_paths_by_folder(full_path)
-        #     for file_path in files_paths:
-        #         tar.add(file_path)
         tar.close()
     return io_obj, 'application/x-gtar'
 
@@ -151,12 +135,6 @@ def seven_zip_files(io_obj: BytesIO, full_path: str) -> tuple[io.BytesIO, str]:
             write_to_file_func=seven_zip.write,
             full_path=full_path
         )
-        # if is_file(full_path):
-        #     seven_zip.write(full_path)
-        # else:
-        #     files_paths = get_files_paths_by_folder(full_path)
-        #     for file_path in files_paths:
-        #         seven_zip.write(file_path)
     return io_obj, 'application/x-7z-compressed'
 
 

@@ -10,7 +10,7 @@ from fastapi import (
     UploadFile,
     status
 )
-from fastapi.responses import FileResponse, StreamingResponse, RedirectResponse
+from fastapi.responses import StreamingResponse, RedirectResponse
 from fastapi_cache.backends.redis import RedisCacheBackend
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +20,6 @@ from src.schemas import file as file_schema
 from src.schemas import user as user_schema
 from src.services.auth import get_current_user
 from src.services.base import file_crud
-from src.tools.base import get_full_path
 from src.tools.cache import (
     get_cache,
     get_cache_or_data,

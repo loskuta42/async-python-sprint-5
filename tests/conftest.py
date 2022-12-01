@@ -1,6 +1,5 @@
 import asyncio
 import multiprocessing
-import os
 import shutil
 import time
 from pathlib import Path
@@ -9,7 +8,7 @@ import pytest
 import pytest_asyncio
 import uvicorn
 from fastapi_cache import caches
-from fastapi_cache.backends.redis import RedisCacheBackend, CACHE_KEY
+from fastapi_cache.backends.redis import RedisCacheBackend
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker

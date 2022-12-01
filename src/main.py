@@ -1,5 +1,3 @@
-import os
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -9,8 +7,6 @@ from fastapi.staticfiles import StaticFiles
 
 from src.api.v1 import base
 from src.core.config import app_settings
-from src.db.db import async_session
-from src.services.base import directory_crud
 
 
 app = FastAPI(
@@ -22,7 +18,7 @@ app = FastAPI(
 )
 
 app.include_router(base.api_router, prefix='/api/v1')
-app.mount('/files', StaticFiles(directory='files'), name='files')
+app.mount('/files', StaticFiles(directory=app_settings.base_dir + '/files'), name='files')
 
 
 @app.on_event('startup')

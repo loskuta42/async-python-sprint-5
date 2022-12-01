@@ -4,7 +4,6 @@ from datetime import datetime
 import redis.asyncio as redis
 from fastapi import APIRouter, status
 
-from src.core.logger import LOGGING
 from src.db.db import engine
 from src.schemas import ping as ping_schema
 from src.core.config import app_settings
@@ -12,7 +11,6 @@ from src.core.config import app_settings
 
 router = APIRouter()
 
-logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('ping')
 
 
