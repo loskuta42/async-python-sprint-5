@@ -70,7 +70,7 @@ async def get_current_user(db: AsyncSession = Depends(get_session), token: str =
             raise credentials_exception
         token_data = user_schema.TokenData(username=username)
     except JWTError:
-        logging.exception('Exception at get_current func')
+        logging.exception('Exception at get_current func for token %s', token)
         raise credentials_exception
     user = await get_user(db=db, username=token_data.username)
     if user is None:

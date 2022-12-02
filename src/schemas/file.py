@@ -46,6 +46,3 @@ class FilesList(ORM):
 
 class ObjPath(ORM):
     path: str
-
-    class Config:
-        orm_mode = True

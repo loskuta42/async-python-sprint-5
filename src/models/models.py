@@ -13,14 +13,14 @@ class User(Base):
     id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid1)
     username = Column(String(125), nullable=False, unique=True)
     hashed_password = Column(String(125), nullable=False)
-    files = relationship('File', backref='user', cascade='save-update, merge, delete')
+    files = relationship('File', backref='user', cascade='CASCADE')
     created_at = Column(DateTime, index=True, default=datetime.utcnow)
 
 
 class File(Base):
     __tablename__ = 'files'
     id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid1)
-    user_id = Column(UUIDType(binary=False), ForeignKey('users.id'), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
     name = Column(String(125), nullable=False)
     created_at = Column(DateTime, index=True, default=datetime.utcnow)
     path = Column(String(255), nullable=False, unique=True)
